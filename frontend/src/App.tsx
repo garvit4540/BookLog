@@ -38,7 +38,7 @@ function Home() {
         if (!res.ok) throw new Error('Failed to fetch books');
         return res.json();
       })
-      .then(data => setBooks(data))
+      .then(data => setBooks(Array.isArray(data) ? data : []))
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
   }, [search, filter]);
@@ -46,7 +46,7 @@ function Home() {
   const tagOptions = ['All', ...Array.from(new Set(books.flatMap(b => b.tags || []))).map((tag: string) => tag.charAt(0).toUpperCase() + tag.slice(1))];
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 py-8">
+    <div className="w-full px-4 py-8 lg:pl-8">
       <h1 className="text-3xl font-bold mb-6 text-blue-700 dark:text-blue-200">Books</h1>
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <input
@@ -73,9 +73,16 @@ function Home() {
       ) : error ? (
         <div className="text-center text-red-500">{error}</div>
       ) : books.length === 0 ? (
-        <div className="text-center text-gray-500 dark:text-gray-300">No books found.</div>
+        <div className="flex flex-col items-center justify-center py-16">
+          <svg width="80" height="80" fill="none" viewBox="0 0 24 24" className="mb-4 text-blue-300 dark:text-blue-900"><path fill="currentColor" d="M4 19V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Zm2 0h10V5H6v14Zm2-2h6v-2H8v2Z"/></svg>
+          <div className="text-lg text-gray-500 dark:text-gray-300 mb-2">No books found.</div>
+          <Link to="/books/new" className="mt-2 px-6 py-2 rounded bg-blue-500 text-white font-semibold hover:bg-blue-400">Add your first book</Link>
+        </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div
+          className="grid gap-6 w-full"
+          style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))' }}
+        >
           {books.map(book => (
             <Link
               to={`/books/${book._id}`}
@@ -132,7 +139,7 @@ function BookDetail() {
   if (!book) return <div className="text-center text-gray-500 dark:text-gray-300">Book not found.</div>;
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 py-8">
+    <div className="w-full px-6 py-8">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
         <div>
           <h1 className="text-3xl font-bold text-blue-700 dark:text-blue-200 mb-2">{book.title}</h1>
@@ -249,7 +256,7 @@ function BookEdit() {
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto px-4 py-8">
+    <div className="w-full px-6 py-8">
       <h1 className="text-2xl font-bold mb-6 text-blue-700 dark:text-blue-200">{isEdit ? 'Edit Book' : 'Add Book'}</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -358,7 +365,7 @@ function ChapterEdit() {
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto px-4 py-8">
+    <div className="w-full px-6 py-8">
       <h1 className="text-2xl font-bold mb-6 text-blue-700 dark:text-blue-200">{isEdit ? 'Edit Chapter' : 'Add Chapter'}</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -438,25 +445,52 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-blue-100 dark:bg-gray-900 transition-colors">
-      <button
-        onClick={toggleTheme}
-        className="absolute top-4 right-4 px-4 py-2 rounded bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 shadow"
-      >
-        {theme === 'dark' ? '🌙 Dark' : '☀️ Light'}
-      </button>
-      <nav className="mb-8 space-x-4">
-        <Link to="/" className="text-blue-700 dark:text-blue-200 underline">Home</Link>
-        <Link to="/books/new" className="text-blue-700 dark:text-blue-200 underline">Add Book</Link>
-      </nav>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/books/new" element={<BookEdit />} />
-        <Route path="/books/:id" element={<BookDetail />} />
-        <Route path="/books/:id/edit" element={<BookEdit />} />
-        <Route path="/books/:id/chapters/new" element={<ChapterEdit />} />
-        <Route path="/books/:id/chapters/:chapterId/edit" element={<ChapterEdit />} />
-      </Routes>
+    <div className="absolute inset-0 min-h-screen w-screen bg-blue-50 dark:bg-gray-900 flex flex-col lg:flex-row">
+      {/* Sidebar for desktop */}
+      <aside className="hidden lg:flex flex-col w-64 bg-white/90 dark:bg-gray-800/90 border-r border-gray-200 dark:border-gray-700 min-h-screen py-8 px-6 space-y-8 sticky top-0 backdrop-blur">
+        <Link to="/" className="text-3xl font-bold text-blue-700 dark:text-blue-200 mb-8">📚 BookLog</Link>
+        <nav className="flex flex-col gap-4">
+          <Link to="/" className="text-lg text-blue-700 dark:text-blue-200 hover:underline font-medium">Home</Link>
+          <Link to="/books/new" className="text-lg text-blue-700 dark:text-blue-200 hover:underline font-medium">Add Book</Link>
+        </nav>
+        <div className="mt-auto">
+          <button
+            onClick={toggleTheme}
+            className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 shadow w-full"
+            title="Toggle theme"
+          >
+            {theme === 'dark' ? '🌙 Dark' : '☀️ Light'}
+          </button>
+        </div>
+      </aside>
+      {/* Topbar for mobile */}
+      <header className="w-full bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-10 flex lg:hidden">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between w-full">
+          <Link to="/" className="text-2xl font-bold text-blue-700 dark:text-blue-200 tracking-tight">📚 BookLog</Link>
+          <nav className="flex items-center gap-4">
+            <Link to="/" className="text-blue-700 dark:text-blue-200 hover:underline font-medium">Home</Link>
+            <Link to="/books/new" className="text-blue-700 dark:text-blue-200 hover:underline font-medium">Add Book</Link>
+            <button
+              onClick={toggleTheme}
+              className="ml-2 px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 shadow"
+              title="Toggle theme"
+            >
+              {theme === 'dark' ? '🌙' : '☀️'}
+            </button>
+          </nav>
+        </div>
+      </header>
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col grow w-full h-screen px-0 py-8">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/books/new" element={<BookEdit />} />
+          <Route path="/books/:id" element={<BookDetail />} />
+          <Route path="/books/:id/edit" element={<BookEdit />} />
+          <Route path="/books/:id/chapters/new" element={<ChapterEdit />} />
+          <Route path="/books/:id/chapters/:chapterId/edit" element={<ChapterEdit />} />
+        </Routes>
+      </main>
     </div>
   );
 }

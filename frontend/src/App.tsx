@@ -192,8 +192,10 @@ function BookDetail() {
                   Edit
                 </button>
               </div>
-              <div className="mt-2 text-gray-700 dark:text-gray-200 line-clamp-3">
-                {chapter.content?.slice(0, 200)}{chapter.content && chapter.content.length > 200 ? '...' : ''}
+              <div className="mt-2 text-gray-700 dark:text-gray-200">
+                <div className="prose max-w-none dark:prose-invert text-left pl-4">
+                  <MarkdownPreview source={chapter.content} />
+                </div>
               </div>
             </div>
           ))}

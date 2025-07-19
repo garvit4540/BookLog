@@ -193,8 +193,8 @@ function BookDetail() {
                 </button>
               </div>
               <div className="mt-2 text-gray-700 dark:text-gray-200">
-                <div className="prose max-w-none dark:prose-invert text-left pl-4">
-                  <MarkdownPreview source={chapter.content} />
+                <div className="prose max-w-none dark:prose-invert text-left">
+                  <MarkdownPreview source={chapter.content} className="p-4" />
                 </div>
               </div>
             </div>

@@ -46,8 +46,8 @@ function Home() {
   const tagOptions = ['All', ...Array.from(new Set(books.flatMap(b => b.tags || []))).map((tag: string) => tag.charAt(0).toUpperCase() + tag.slice(1))];
 
   return (
-    <div className="w-full px-4 py-8 lg:pl-8">
-      <h1 className="text-3xl font-bold mb-6 text-blue-700 dark:text-blue-200">Books</h1>
+    <div className="w-full px-0 py-0 lg:pl-0">
+      <h1 className="text-3xl font-bold text-blue-700 dark:text-blue-200">Books</h1>
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <input
           type="text"
@@ -447,9 +447,9 @@ function App() {
   };
 
   return (
-    <div className="absolute inset-0 min-h-screen w-screen bg-blue-50 dark:bg-gray-900 flex flex-col lg:flex-row">
+    <div className="min-h-full w-full bg-blue-50 dark:bg-gray-900 flex flex-col lg:flex-row">
       {/* Sidebar for desktop */}
-      <aside className="hidden lg:flex flex-col w-64 bg-white/90 dark:bg-gray-800/90 border-r border-gray-200 dark:border-gray-700 min-h-screen py-8 px-6 space-y-8 sticky top-0 backdrop-blur">
+      <aside className="hidden lg:flex flex-col w-64 bg-white/90 dark:bg-gray-800/90 border-r border-gray-200 dark:border-gray-700 min-h-full py-8 px-6 space-y-8 sticky top-0 backdrop-blur">
         <Link to="/" className="text-3xl font-bold text-blue-700 dark:text-blue-200 mb-8">📚 BookLog</Link>
         <nav className="flex flex-col gap-4">
           <Link to="/" className="text-lg text-blue-700 dark:text-blue-200 hover:underline font-medium">Home</Link>
@@ -483,7 +483,7 @@ function App() {
         </div>
       </header>
       {/* Main Content */}
-      <main className="flex-1 flex flex-col grow w-full h-screen px-0 py-8">
+      <main className="flex-1 flex flex-col grow w-full min-h-full px-0 py-0">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/books/new" element={<BookEdit />} />
